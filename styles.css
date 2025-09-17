@@ -1,0 +1,59 @@
+:root {
+  --bg:#0e0f13; --panel:#161922; --accent:#6cf; --accent2:#9f6cff; --text:#e7ecf3;
+  --good:#5ad27d; --warn:#ffb84d; --bad:#ff6c6c;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(140deg,#0e0f13,#121622 60%,#0b0d14);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+/* ...rest of the CSS from before... */
+:root{
+    --bg:#0e0f13; --panel:#161922; --accent:#6cf; --accent2:#9f6cff; --text:#e7ecf3;
+    --good:#5ad27d; --warn:#ffb84d; --bad:#ff6c6c;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(140deg,#0e0f13,#121622 60%,#0b0d14);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+  header{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:14px 16px;background:#0b0e14;position:sticky;top:0;z-index:3;border-bottom:1px solid #1f2330}
+  .title{font-weight:800;letter-spacing:.5px}
+  .soft{opacity:.8}
+  .row{display:flex;gap:10px;align-items:center}
+  .chip{background:#1a1f2e;border:1px solid #283049;border-radius:10px;padding:6px 10px;font-size:.9rem}
+  .btn{background:linear-gradient(180deg,#1e2536,#171c2a);border:1px solid #2a3349;border-radius:10px;color:var(--text);padding:10px 12px;font-weight:600;cursor:pointer;transition:.15s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(108,204,255,.08)}
+  .btn.primary{background:linear-gradient(180deg,#2a8fff,#1b6ed6);border-color:#2f86ff}
+  .btn.good{background:linear-gradient(180deg,#2faa73,#1f8b5a);border-color:#37b87f}
+  .btn.warn{background:linear-gradient(180deg,#ffb84d,#ff9e2f);border-color:#ffa533;color:#1b1300}
+  .btn.ghost{background:#10131b;border:1px dashed #2b344a;color:#c3d2ff}
+  .wrap{max-width:1100px;margin:18px auto;padding:0 14px 60px}
+  nav.tabs{display:flex;gap:8px;margin:14px 0 6px;flex-wrap:wrap}
+  .tab{padding:8px 12px;border-radius:12px;border:1px solid #293148;background:#151a26;cursor:pointer}
+  .tab.active{background:linear-gradient(180deg,#21293b,#151c29);border-color:#3a4661;box-shadow:inset 0 0 0 1px #3a4661}
+  .panels{display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start}
+  .panel{background:linear-gradient(180deg,#141925,#0f1420);border:1px solid #252c40;border-radius:14px;padding:12px;min-height:240px}
+  .panel h3{margin:6px 4px 10px;font-size:1.05rem}
+  .grid{display:grid;gap:6px;user-select:none}
+  .grid.world{grid-template-columns:repeat(5,1fr);grid-auto-rows:88px;padding:8px;background:#0f1320;border:1px solid #242b40;border-radius:12px;position:relative;overflow:hidden}
+  .cell{background:rgba(255,255,255,.03);border:1px solid #23293c;border-radius:10px;position:relative}
+  .entity{position:absolute;inset:4px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;letter-spacing:.4px;cursor:grab;transition:transform .08s}
+  .entity:active{cursor:grabbing;transform:scale(.98)}
+  .e-l1{background:linear-gradient(180deg,#344455,#2a3749);border:1px solid #3d5168;color:#dff1ff}
+  .e-l2{background:linear-gradient(180deg,#2b5e6a,#234f59);border:1px solid #2f7180}
+  .e-l3{background:linear-gradient(180deg,#2a6f4b,#225d3f);border:1px solid #2f845b}
+  .e-l4{background:linear-gradient(180deg,#586f2a,#4a5c24);border:1px solid #6b8a36}
+  .e-l5{background:linear-gradient(180deg,#7a6a2a,#6a5b24);border:1px solid #9b8536}
+  .e-l6{background:linear-gradient(180deg,#7a3a2a,#6a3124);border:1px solid #9b4b36}
+  .e-l7{background:linear-gradient(180deg,#6a2a7a,#5a246a);border:1px solid #8b36a0}
+  .e-l8{background:linear-gradient(180deg,#2a2f7a,#242a6a);border:1px solid #3640a0}
+  .e-l9{background:linear-gradient(180deg,#7a2a56,#6a244a);border:1px solid #a03674}
+  .e-l10{background:linear-gradient(180deg,#9f6cff,#7c3bff);border:1px solid #b48cff;box-shadow:0 0 18px #7c3bff55}
+  .hud{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .note{font-size:.9rem;opacity:.85;margin:6px 2px}
+  .shop{display:grid;gap:8px}
+  .shop .item{display:flex;justify-content:space-between;align-items:center;background:#0f1422;border:1px solid #26304a;border-radius:10px;padding:8px}
+  .badge{padding:2px 8px;border-radius:999px;font-weight:700;background:#162135;border:1px solid #2a3c61}
+  .badge.good{background:#102418;border-color:#2e6a49;color:#91f0b8}
+  .badge.boost{background:#1d1530;border-color:#3b2a6a;color:#d3b8ff}
+  .subtle{opacity:.75}
+  .temple{display:grid;gap:10px}
+  .progress{height:10px;border-radius:999px;background:#101520;border:1px solid #24304a;overflow:hidden}
+  .progress>div{height:100%;background:linear-gradient(90deg,#9f6cff,#6ccfff);box-shadow:0 0 12px #9f6cff55 inset}
+  footer{opacity:.7;text-align:center;margin:24px 0}
+  .sidecard{background:linear-gradient(180deg,#121829,#0d121f);border:1px dashed #2a3552;border-radius:12px;padding:10px}

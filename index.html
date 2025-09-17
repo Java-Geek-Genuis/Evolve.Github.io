@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Evolution Merge Game</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div class="row">
+    <div class="title">Evolution Merge</div>
+    <div class="chip" id="coinsChip">Coins: 0</div>
+    <div class="chip" id="shardsChip">Shards: 0</div>
+    <div class="chip" id="multChip">x1.00</div>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="saveBtn">Save</button>
+    <button class="btn ghost" id="resetBtn">Reset</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="tabs" id="tabBar"></nav>
+
+  <div class="panels">
+    <section class="panel">
+      <h3 id="panelTitle">World</h3>
+      <div class="hud">
+        <button class="btn primary" id="spawnBtn">Drop basic creature</button>
+        <button class="btn" id="boxBtn">Supply crate (50)</button>
+        <div class="chip soft" id="worldInfo">—</div>
+      </div>
+      <p class="note" id="hint">Merge identical creatures by dragging one onto another to evolve them.</p>
+      <div class="grid world" id="grid"></div>
+    </section>
+
+    <aside class="panel">
+      <h3>Upgrades</h3>
+      <div class="shop" id="shop"></div>
+      <div class="sidecard" style="margin-top:12px">
+        <div class="row" style="justify-content:space-between">
+          <div><strong>Temple</strong> <span class="subtle">(prestige)</span></div>
+          <div class="badge boost">Meta</div>
+        </div>
+        <p class="subtle">Ascend to earn shards, reset worlds, and boost all coin gains. God level unlocks after enough shards.</p>
+        <div class="temple">
+          <div>Shards if ascend now: <strong id="shardsPreview">0</strong></div>
+          <div class="progress"><div id="godProg" style="width:0%"></div></div>
+          <div class="row" style="gap:8px">
+            <button class="btn good" id="ascendBtn">Ascend</button>
+            <button class="btn" id="spendShardBtn">Spend 1 shard: +10% global</button>
+          </div>
+        </div>
+      </div>
+      <div class="sidecard" id="godCard" style="margin-top:12px; display:none">
+        <div class="row" style="justify-content:space-between">
+          <div><strong>God level</strong></div>
+          <div class="badge good">Unlocked</div>
+        </div>
+        <p class="subtle">Divine aura grants a permanent super boost. Each offering increases it further.</p>
+        <div class="row" style="gap:8px">
+          <button class="btn warn" id="godOfferBtn">Make offering (costs 5 shards)</button>
+          <div class="chip" id="godPowerChip">God aura: x1.00</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    Tip: Different worlds have unique multipliers. Fill the grid, merge smartly, then ascend for shards to snowball.
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
