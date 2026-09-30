@@ -49,19 +49,14 @@ jobs:
             "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041",
             "--passive",
             "--norestart",
-            "--wait",
             "--force"
           )
 
           Write-Host ("Running: {0} {1}" -f $setup, ($args -join " "))
           $p = Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
           Write-Host ("Visual Studio installer exit code: {0}" -f $p.ExitCode)
-
           if ($p.ExitCode -ne 0) {
-            Write-Warning "Installer did not report success. Trying a second modification pass."
-            $p2 = Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
-            Write-Host ("Second Visual Studio installer exit code: {0}" -f $p2.ExitCode)
-            if ($p2.ExitCode -ne 0) { throw "Unable to add UWP build components." }
+            throw "Unable to add UWP build components. Installer exit code $($p.ExitCode)."
           }
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
@@ -69,7 +64,7 @@ jobs:
         shell: pwsh
         run: |
           $targets = Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
-          if (-not $targets) { throw "Microsoft.Windows.Xaml.targets is still missing after UWP installation." }
+          if (-not $targets) { throw "Microsoft.Windows.Xaml.targets is missing after UWP installation." }
           Write-Host "Found UWP XAML targets at $($targets.FullName)"
       - name: Restore NuGet packages
         shell: pwsh
