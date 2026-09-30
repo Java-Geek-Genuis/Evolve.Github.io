@@ -84,10 +84,14 @@ jobs:
       - name: Create temporary signing certificate
         shell: pwsh
         run: |
-          $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=BlazeBinky PetWorld" -KeyAlgorithm RSA -KeyLength 2048 -KeyUsage DigitalSignature -CertStoreLocation "Cert:\CurrentUser\My" -NotAfter (Get-Date).AddYears(3)
+          $publisher = "CN=BlazeBinky PetWorld"
+          $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject $publisher -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -KeyExportPolicy Exportable -CertStoreLocation "Cert:\CurrentUser\My" -NotAfter (Get-Date).AddYears(3)
+          if ($cert.Subject -cne $publisher) { throw "Certificate subject '$($cert.Subject)' does not exactly match manifest publisher '$publisher'." }
           $pwd = ConvertTo-SecureString ([Guid]::NewGuid().ToString()) -AsPlainText -Force
           Export-PfxCertificate -Cert $cert -FilePath "$env:RUNNER_TEMP\PetWorldSigning.pfx" -Password $pwd | Out-Null
-          Export-Certificate -Cert $cert -FilePath "$env:GITHUB_WORKSPACE\artifacts\PetWorldMobile.cer" | Out-Null
+          $cerPath = "$env:GITHUB_WORKSPACE\artifacts\PetWorldMobile.cer"
+          Export-Certificate -Cert $cert -FilePath $cerPath | Out-Null
+          Import-Certificate -FilePath $cerPath -CertStoreLocation "Cert:\CurrentUser\Root" | Out-Null
           $secret = [System.Net.NetworkCredential]::new("", $pwd).Password
           "PETWORLD_PFX_PASSWORD=$secret" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Sign APPX
@@ -97,7 +101,7 @@ jobs:
           if (-not $signtool) { throw "signtool.exe not found." }
           $appx = Get-ChildItem artifacts -Filter *.appx | Select-Object -First 1
           if (-not $appx) { throw "APPX not found." }
-          & $signtool.FullName sign /fd SHA256 /a /f "$env:RUNNER_TEMP\PetWorldSigning.pfx" /p "$env:PETWORLD_PFX_PASSWORD" "$($appx.FullName)"
+          & $signtool.FullName sign /fd SHA256 /f "$env:RUNNER_TEMP\PetWorldSigning.pfx" /p "$env:PETWORLD_PFX_PASSWORD" "$($appx.FullName)"
           if ($LASTEXITCODE -ne 0) { throw "signtool failed with exit code $LASTEXITCODE." }
           & $signtool.FullName verify /pa /all "$($appx.FullName)"
           if ($LASTEXITCODE -ne 0) { throw "APPX signature verification failed." }
