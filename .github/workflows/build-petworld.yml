@@ -61,22 +61,10 @@ jobs:
           if ($p.ExitCode -ne 0) { throw "VS2022 UWP toolchain installation failed." }
 
       - name: Verify UWP targets
-
         shell: pwsh
         run: |
-          $roots = @(
-            "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml",
-            "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml",
-            "C:\Program Files (x86)\Windows Kits\10\DesignTime\CommonConfiguration\Neutral"
-          )
-          $found = $null
-          foreach ($root in $roots) {
-            if (Test-Path $root) {
-              $found = Get-ChildItem $root -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
-              if ($found) { break }
-            }
-          }
-          if (-not $found) { throw "Microsoft.Windows.Xaml.targets is still missing." }
+          $found = Get-ChildItem "D:\a\VS2022UWP" -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $found) { throw "Microsoft.Windows.Xaml.targets is missing from the fresh UWP toolchain." }
           Write-Host "Found UWP XAML targets at $($found.FullName)"
 
       - name: Restore NuGet packages
