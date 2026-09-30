@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
-    <ProjectReference Include="..\Core\PetWorld.Core.csproj">
+    <ProjectReference Include="Core\PetWorld.Core.csproj">
       <Project>{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}</Project>
       <Name>PetWorld.Core</Name>
     </ProjectReference>
