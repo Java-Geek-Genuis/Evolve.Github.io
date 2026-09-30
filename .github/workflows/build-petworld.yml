@@ -37,37 +37,44 @@ jobs:
       - name: Install UWP build components
         shell: pwsh
         run: |
-          $setup = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe"
-          if (-not (Test-Path $setup)) { throw "Visual Studio setup.exe not found." }
+          $bootstrapper = "$env:RUNNER_TEMP\vs_enterprise.exe"
+          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_enterprise.exe" -OutFile $bootstrapper
 
           $installPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
           $args = @(
             "modify",
-            "--installPath", $installPath,
             "--add", "Microsoft.VisualStudio.Workload.Universal",
-            "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.NetCoreAndStandard",
+            "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041",
             "--add", "Microsoft.VisualStudio.Component.VC.Tools.ARM",
             "--add", "Microsoft.VisualStudio.Component.VC.14.29.16.11.ARM",
-            "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041",
             "--includeRecommended",
-            "--passive",
+            "--installPath", $installPath,
+            "--wait",
+            "--quiet",
+            "--force",
             "--norestart"
           )
 
-          Write-Host ("Running: {0} {1}" -f $setup, ($args -join " "))
-          $p = Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
-          Write-Host ("Visual Studio installer exit code: {0}" -f $p.ExitCode)
+          Write-Host ("Running: {0} {1}" -f $bootstrapper, ($args -join " "))
+          $p = Start-Process -FilePath $bootstrapper -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          Write-Host ("Visual Studio bootstrapper exit code: {0}" -f $p.ExitCode)
           if ($p.ExitCode -ne 0) {
-            Write-Host "Installer returned a non-zero code; continuing to verify whether the requested components were actually installed."
+            throw "Unable to add UWP build components. Bootstrapper exit code $($p.ExitCode)."
           }
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
       - name: Verify UWP targets
         shell: pwsh
         run: |
-          $targets = Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise" -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
-          if (-not $targets) { throw "Microsoft.Windows.Xaml.targets is missing after the UWP installation step." }
-          Write-Host "Found UWP XAML targets at $($targets.FullName)"
+          $direct = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml\v17.0\Microsoft.Windows.Xaml.targets"
+          if (Test-Path $direct) {
+            Write-Host "Found UWP XAML targets at $direct"
+          } else {
+            $targets = Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml" -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $targets) { throw "Microsoft.Windows.Xaml.targets is still missing after the UWP installation step." }
+            Write-Host "Found UWP XAML targets at $($targets.FullName)"
+          }
       - name: Restore NuGet packages
         shell: pwsh
         run: nuget restore PetWorldMobile/PetWorldMobile.sln
