@@ -2,33 +2,12 @@
 
 An original virtual-pet adventure for the Windows Phone / Windows 10 Mobile era.
 
-## Current version
+Current features include the virtual pet, offline save data, evolution, pet sharing/visits, and a touch-controlled 7x7 meadow adventure with pickups, movement, treasure events, and rest.
 
-The petworld-mobile-v1 branch contains:
+The pet's position is saved, so leaving and reopening the adventure keeps its last location.
 
-- ARM UWP project and Visual Studio solution
-- local offline save data
-- hunger, energy, happiness, bond and curiosity
-- strength, speed, XP, coins, leveling and evolution
-- feed, play, train, sleep and explore actions
-- touch-friendly animated vector pet
-- exportable pet link codes with checksum validation
-- importing another player's code for a friend visit
-- GitHub Actions self-tests
-- GitHub Actions UWP ARM build and package signing pipeline
+Build with Visual Studio 2022 plus UWP development support. Select Release | ARM for the phone build.
 
-## Sharing pets
-
-Open PET LINK / VISIT. Copy your code and send it to another player. Paste a friend's code to make a visit. The visit boosts happiness and bond without replacing your own pet.
-
-## Building
-
-Open PetWorldMobile/PetWorldMobile.sln with Visual Studio 2022 plus UWP development support. Select Release | ARM.
-
-GitHub Actions installs the UWP build component, runs the core self-tests, builds an ARM APPX, creates a temporary test certificate, signs the APPX, verifies the signature, and uploads the package and certificate.
+GitHub Actions runs gameplay self-tests and builds an ARM UWP APPX on Windows runners with the UWP tools installed by the workflow.
 
 The phone itself remains the final runtime test because Windows 10 Mobile hardware and OS builds vary.
-
-## Next gameplay work
-
-The next feature pass will turn the current pet screen into a small explorable world with touch movement, collectible items, home decoration, NPC/friend encounters and additional pet species.

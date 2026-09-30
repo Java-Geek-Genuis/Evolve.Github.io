@@ -143,12 +143,13 @@ namespace PetWorldMobile
             string result = pet.Explore();
             SavePet();
             UpdateUi();
-            await new ContentDialog
-            {
-                Title = "Adventure",
-                Content = result,
-                PrimaryButtonText = "Nice!"
-            }.ShowAsync();
+            await new ContentDialog { Title = "Adventure", Content = result, PrimaryButtonText = "Nice!" }.ShowAsync();
+        }
+
+        private void Adventure_Click(object sender, RoutedEventArgs e)
+        {
+            SavePet();
+            Frame.Navigate(typeof(AdventurePage));
         }
 
         private async void Stats_Click(object sender, RoutedEventArgs e)
@@ -165,12 +166,7 @@ namespace PetWorldMobile
                 "Strength: " + pet.Strength + "\n" +
                 "Speed: " + pet.Speed;
 
-            await new ContentDialog
-            {
-                Title = "Pet Stats",
-                Content = content,
-                PrimaryButtonText = "Close"
-            }.ShowAsync();
+            await new ContentDialog { Title = "Pet Stats", Content = content, PrimaryButtonText = "Close" }.ShowAsync();
         }
 
         private async void Link_Click(object sender, RoutedEventArgs e)
@@ -193,10 +189,10 @@ namespace PetWorldMobile
                 PlaceholderText = "Paste a friend's PetWorld code here"
             };
 
-            var content = new StackPanel { Spacing = 8 };
+            var content = new StackPanel();
             content.Children.Add(new TextBlock
             {
-                Text = "Your code is ready to send. To visit a friend, paste their code below. Visits give your pet a bond and happiness boost without replacing your pet.",
+                Text = "Copy your code to send it to another player, or paste a friend's code below to visit.",
                 TextWrapping = TextWrapping.Wrap
             });
             content.Children.Add(copyButton);
@@ -224,19 +220,13 @@ namespace PetWorldMobile
                 await new ContentDialog
                 {
                     Title = "Friend Visit!",
-                    Content = friend.Name + " the " + friend.Species + " visited your pet. " +
-                              "Your bond and happiness increased!",
+                    Content = friend.Name + " the " + friend.Species + " visited your pet. Your bond and happiness increased!",
                     PrimaryButtonText = "YAY!"
                 }.ShowAsync();
             }
             catch (Exception ex)
             {
-                await new ContentDialog
-                {
-                    Title = "Invalid Pet Code",
-                    Content = ex.Message,
-                    PrimaryButtonText = "Close"
-                }.ShowAsync();
+                await new ContentDialog { Title = "Invalid Pet Code", Content = ex.Message, PrimaryButtonText = "Close" }.ShowAsync();
             }
         }
     }

@@ -35,30 +35,40 @@
         <Ellipse x:Name="Belly" Fill="#91E1C4"/>
         <Ellipse x:Name="Eye1" Fill="#182031"/>
         <Ellipse x:Name="Eye2" Fill="#182031"/>
-        <Path x:Name="Smile" Stroke="#182031" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+        <Path x:Name="Smile" Stroke="#182031" StrokeThickness="5"
+              StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
         <Polygon x:Name="Ear1" Fill="#53C797"/>
         <Polygon x:Name="Ear2" Fill="#53C797"/>
-        <TextBlock x:Name="MoodBubble" Text="Hello!" FontSize="16" Foreground="{StaticResource TextBrush}" Background="#30425F" Padding="9,4" />
+        <TextBlock x:Name="MoodBubble" Text="Hello!" FontSize="16"
+                   Foreground="{StaticResource TextBrush}"
+                   Background="#30425F" Padding="9,4"/>
       </Canvas>
     </Grid>
 
     <StackPanel Grid.Row="2" Padding="7,2,7,8">
       <Grid>
-        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Button Content="FEED" Click="Feed_Click" Grid.Column="0"/>
         <Button Content="PLAY" Click="Play_Click" Grid.Column="1"/>
         <Button Content="TRAIN" Click="Train_Click" Grid.Column="2"/>
       </Grid>
       <Grid>
-        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Button Content="SLEEP" Click="Sleep_Click" Grid.Column="0"/>
         <Button Content="EXPLORE" Click="Explore_Click" Grid.Column="1"/>
         <Button Content="SAVE" Click="Save_Click" Grid.Column="2"/>
       </Grid>
       <Grid>
-        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
-        <Button Content="PET LINK / VISIT" Click="Link_Click" Grid.Column="0"/>
-        <Button Content="STATS" Click="Stats_Click" Grid.Column="1"/>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Content="ADVENTURE" Click="Adventure_Click" Grid.Column="0"/>
+        <Button Content="PET LINK / VISIT" Click="Link_Click" Grid.Column="1"/>
+        <Button Content="STATS" Click="Stats_Click" Grid.Column="2"/>
       </Grid>
     </StackPanel>
   </Grid>

@@ -1,0 +1,51 @@
+<Page
+    x:Class="PetWorldMobile.AdventurePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{StaticResource PageBrush}">
+  <Grid Padding="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0" Margin="2,2,2,8">
+      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+      <StackPanel>
+        <TextBlock x:Name="TitleText" Text="Meadow Adventure" FontSize="25" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
+        <TextBlock x:Name="InfoText" Text="Explore the meadow." FontSize="14" Foreground="#B9C7DC"/>
+      </StackPanel>
+      <Button Grid.Column="1" Content="BACK" Click="Back_Click"/>
+    </Grid>
+
+    <Border Grid.Row="1" Background="#17283A" CornerRadius="16" Padding="8">
+      <Grid x:Name="MapGrid"/>
+    </Border>
+
+    <Grid Grid.Row="2" Margin="0,8,0,4">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+      <Grid ColumnDefinitions="*,*,*" Row="0">
+        <Button Content="UP" Click="Up_Click" Grid.Column="1"/>
+      </Grid>
+      <Grid ColumnDefinitions="*,*,*" Row="1">
+        <Button Content="LEFT" Click="Left_Click" Grid.Column="0"/>
+        <Button Content="ACT" Click="Act_Click" Grid.Column="1"/>
+        <Button Content="RIGHT" Click="Right_Click" Grid.Column="2"/>
+      </Grid>
+      <Grid ColumnDefinitions="*,*" Row="2">
+        <Button Content="DOWN" Click="Down_Click" Grid.Column="0"/>
+        <Button Content="REST" Click="Rest_Click" Grid.Column="1"/>
+      </Grid>
+    </Grid>
+
+    <Border Grid.Row="3" Background="#24314B" CornerRadius="10" Padding="9" Margin="0,5,0,0">
+      <TextBlock x:Name="MessageText" Text="Your pet is ready for adventure." TextWrapping="Wrap" Foreground="{StaticResource TextBrush}"/>
+    </Border>
+  </Grid>
+</Page>
