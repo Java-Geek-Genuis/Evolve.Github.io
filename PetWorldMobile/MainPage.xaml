@@ -1,0 +1,65 @@
+<Page
+    x:Class="PetWorldMobile.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{StaticResource PageBrush}">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Row="0" Padding="12,10,12,4">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+          <TextBlock x:Name="PetNameText" Text="Blinky" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
+          <TextBlock x:Name="StatusText" Text="Level 1 • Content" FontSize="15" Foreground="#B9C7DC"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+          <TextBlock x:Name="CoinText" Text="Coins 40" FontSize="18" HorizontalAlignment="Right" Foreground="{StaticResource TextBrush}"/>
+          <TextBlock x:Name="SpeciesText" Text="Sproutling" FontSize="13" HorizontalAlignment="Right" Foreground="#B9C7DC"/>
+        </StackPanel>
+      </Grid>
+    </StackPanel>
+
+    <Grid Grid.Row="1" Margin="12,4,12,4">
+      <Border Background="#1E2A3E" CornerRadius="18"/>
+      <Canvas x:Name="WorldCanvas" SizeChanged="WorldCanvas_SizeChanged">
+        <Ellipse x:Name="Shadow" Fill="#0F1624" Opacity="0.45"/>
+        <Ellipse x:Name="Body" Fill="#53C797"/>
+        <Ellipse x:Name="Belly" Fill="#91E1C4"/>
+        <Ellipse x:Name="Eye1" Fill="#182031"/>
+        <Ellipse x:Name="Eye2" Fill="#182031"/>
+        <Path x:Name="Smile" Stroke="#182031" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+        <Polygon x:Name="Ear1" Fill="#53C797"/>
+        <Polygon x:Name="Ear2" Fill="#53C797"/>
+        <TextBlock x:Name="MoodBubble" Text="Hello!" FontSize="16" Foreground="{StaticResource TextBrush}" Background="#30425F" Padding="9,4" />
+      </Canvas>
+    </Grid>
+
+    <StackPanel Grid.Row="2" Padding="7,2,7,8">
+      <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <Button Content="FEED" Click="Feed_Click" Grid.Column="0"/>
+        <Button Content="PLAY" Click="Play_Click" Grid.Column="1"/>
+        <Button Content="TRAIN" Click="Train_Click" Grid.Column="2"/>
+      </Grid>
+      <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <Button Content="SLEEP" Click="Sleep_Click" Grid.Column="0"/>
+        <Button Content="EXPLORE" Click="Explore_Click" Grid.Column="1"/>
+        <Button Content="SAVE" Click="Save_Click" Grid.Column="2"/>
+      </Grid>
+      <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <Button Content="PET LINK / VISIT" Click="Link_Click" Grid.Column="0"/>
+        <Button Content="STATS" Click="Stats_Click" Grid.Column="1"/>
+      </Grid>
+    </StackPanel>
+  </Grid>
+</Page>

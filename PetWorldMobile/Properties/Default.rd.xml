@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
+  <Application>
+    <Type Name="PetWorld.Core.PetState" Dynamic="Required All" />
+    <Type Name="PetWorld.Core.PetCodec" Dynamic="Required All" />
+  </Application>
+</Directives>

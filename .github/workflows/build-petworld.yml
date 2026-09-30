@@ -1,0 +1,62 @@
+name: PetWorld Mobile Build
+
+on:
+  push:
+    branches: [ petworld-mobile-v1 ]
+    paths:
+      - 'PetWorldMobile/**'
+      - '.github/workflows/build-petworld.yml'
+  pull_request:
+    paths:
+      - 'PetWorldMobile/**'
+      - '.github/workflows/build-petworld.yml'
+  workflow_dispatch:
+
+jobs:
+  core-tests:
+    name: Core gameplay tests
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Run self tests
+        shell: pwsh
+        run: dotnet run --project PetWorldMobile/Tests/PetWorld.SelfTest.csproj -c Release
+
+  uwp-arm:
+    name: Build UWP ARM package
+    runs-on: windows-2022
+    needs: core-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: nuget restore PetWorldMobile/PetWorldMobile.sln
+      - name: Build and package ARM
+        shell: pwsh
+        run: >
+          msbuild PetWorldMobile/PetWorldMobile.sln
+          /m
+          /p:Configuration=Release
+          /p:Platform=ARM
+          /p:AppxPackageSigningEnabled=false
+          /p:GenerateAppxPackageOnBuild=true
+      - name: Collect APPX
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $files = Get-ChildItem -Path PetWorldMobile -Recurse -Filter *.appx
+          if (-not $files) { throw "No APPX was produced." }
+          $files | Copy-Item -Destination artifacts -Force
+      - name: Upload ARM APPX
+        uses: actions/upload-artifact@v4
+        with:
+          name: PetWorld-Mobile-ARM-unsigned
+          path: artifacts/*
