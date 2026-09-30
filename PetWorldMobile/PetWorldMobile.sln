@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetWorldMobile", "PetWorldMobile\PetWorldMobile.csproj", "{F08D3E64-E9B0-4E33-A08E-2BEE77D49201}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetWorldMobile", "PetWorldMobile.csproj", "{F08D3E64-E9B0-4E33-A08E-2BEE77D49201}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetWorld.Core", "Core\PetWorld.Core.csproj", "{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}"
 EndProject
@@ -23,8 +23,12 @@ Global
 		{F08D3E64-E9B0-4E33-A08E-2BEE77D49201}.Release|x86.ActiveCfg = Release|x86
 		{F08D3E64-E9B0-4E33-A08E-2BEE77D49201}.Release|x86.Build.0 = Release|x86
 		{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}.Debug|ARM.Build.0 = Debug|Any CPU
 		{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}.Release|ARM.Build.0 = Release|Any CPU
 		{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}.Debug|x86.Build.0 = Debug|Any CPU
 		{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}.Release|x86.ActiveCfg = Release|Any CPU
+		{6BBE1DD3-2B6B-4A9C-9E24-6D8E3BB72AB1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
