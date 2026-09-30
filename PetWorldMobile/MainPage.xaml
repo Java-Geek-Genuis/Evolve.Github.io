@@ -41,7 +41,7 @@
         <Polygon x:Name="Ear2" Fill="#53C797"/>
         <TextBlock x:Name="MoodBubble" Text="Hello!" FontSize="16"
                    Foreground="{StaticResource TextBrush}"
-                   Background="#30425F" Padding="9,4"/>
+                   Margin="8"/>
       </Canvas>
     </Grid>
 
