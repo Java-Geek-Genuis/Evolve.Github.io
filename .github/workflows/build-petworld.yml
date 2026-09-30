@@ -34,43 +34,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install legacy UWP tooling
+      - name: Install minimal VS2022 UWP toolchain
         shell: pwsh
         run: |
-          $setup = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe"
-          if (-not (Test-Path $setup)) { throw "Visual Studio setup.exe not found." }
-          $installPath = & "C:\ProgramData\Chocolatey\bin\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-          if (-not $installPath) { throw "Unable to locate Visual Studio installation." }
+          $bootstrapper = "$env:RUNNER_TEMP\vs_community.exe"
+          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_community.exe" -OutFile $bootstrapper
+          $installPath = "D:\a\VS2022UWP"
 
           $args = @(
-            "modify",
-            "--installPath", $installPath.Trim(),
+            "--installPath", $installPath,
             "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.Support",
             "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.NetCoreAndStandard",
+            "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.VC.v142",
             "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041",
             "--add", "Microsoft.VisualStudio.Component.VC.Tools.ARM",
             "--add", "Microsoft.VisualStudio.Component.VC.14.29.16.11.ARM",
+            "--add", "Microsoft.Component.NetFX.Native",
             "--quiet",
+            "--wait",
             "--norestart"
           )
 
-          Write-Host ("Visual Studio: {0}" -f $installPath)
-          Write-Host ("Running: {0} {1}" -f $setup, ($args -join " "))
-          $p = Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
-          Write-Host ("Visual Studio installer exit code: {0}" -f $p.ExitCode)
+          Write-Host ("Installing minimal UWP toolchain at {0}" -f $installPath)
+          $p = Start-Process -FilePath $bootstrapper -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          Write-Host ("VS2022 bootstrapper exit code: {0}" -f $p.ExitCode)
+          if ($p.ExitCode -ne 0) { throw "VS2022 UWP toolchain installation failed." }
 
-          if ($p.ExitCode -ne 0) {
-            Write-Host "Installer returned non-zero; printing recent setup logs before failing."
-            Get-ChildItem "$env:TEMP" -Filter "dd_setup_*.log" -ErrorAction SilentlyContinue |
-              Sort-Object LastWriteTime -Descending |
-              Select-Object -First 3 |
-              ForEach-Object { Write-Host "=== $($_.FullName) ==="; Get-Content $_.FullName -Tail 80 }
-            throw "Unable to add legacy UWP tooling."
-          }
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
       - name: Verify UWP targets
+
         shell: pwsh
         run: |
           $roots = @(
@@ -94,7 +85,7 @@ jobs:
       - name: Build UWP ARM package
         shell: pwsh
         run: >
-          msbuild PetWorldMobile/PetWorldMobile.sln
+          & 'D:\a\VS2022UWP\MSBuild\Current\Bin\MSBuild.exe' PetWorldMobile/PetWorldMobile.sln
           /m
           /p:Configuration=Release
           /p:Platform=ARM
