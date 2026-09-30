@@ -18,7 +18,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel>
           <TextBlock x:Name="PetNameText" Text="Blinky" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
-          <TextBlock x:Name="StatusText" Text="Level 1 • Content" FontSize="15" Foreground="#B9C7DC"/>
+          <TextBlock x:Name="StatusText" Text="Lv 1 • Content" FontSize="15" Foreground="#B9C7DC"/>
         </StackPanel>
         <StackPanel Grid.Column="1" HorizontalAlignment="Right">
           <TextBlock x:Name="CoinText" Text="Coins 40" FontSize="18" HorizontalAlignment="Right" Foreground="{StaticResource TextBrush}"/>

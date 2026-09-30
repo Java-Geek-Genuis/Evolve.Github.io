@@ -175,17 +175,69 @@ namespace PetWorldMobile
 
         private async void Link_Click(object sender, RoutedEventArgs e)
         {
-            string code = PetCodec.Encode(pet);
-            var package = new DataPackage();
-            package.SetText(code);
-            Clipboard.SetContent(package);
+            string myCode = PetCodec.Encode(pet);
 
-            await new ContentDialog
+            var copyButton = new Button { Content = "COPY MY PET CODE", HorizontalAlignment = HorizontalAlignment.Left };
+            copyButton.Click += (s, args) =>
             {
-                Title = "Pet Link",
-                Content = "A shareable pet code was copied to the clipboard. Send it to another player. The next milestone adds direct code importing and pet visits.",
-                PrimaryButtonText = "Close"
-            }.ShowAsync();
+                var outgoing = new DataPackage();
+                outgoing.SetText(myCode);
+                Clipboard.SetContent(outgoing);
+                copyButton.Content = "COPIED!";
+            };
+
+            var input = new TextBox
+            {
+                AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
+                PlaceholderText = "Paste a friend's PetWorld code here"
+            };
+
+            var content = new StackPanel { Spacing = 8 };
+            content.Children.Add(new TextBlock
+            {
+                Text = "Your code is ready to send. To visit a friend, paste their code below. Visits give your pet a bond and happiness boost without replacing your pet.",
+                TextWrapping = TextWrapping.Wrap
+            });
+            content.Children.Add(copyButton);
+            content.Children.Add(input);
+
+            var dialog = new ContentDialog
+            {
+                Title = "Pet Link / Visit",
+                Content = content,
+                PrimaryButtonText = "VISIT FRIEND",
+                SecondaryButtonText = "CLOSE"
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result != ContentDialogResult.Primary || string.IsNullOrWhiteSpace(input.Text))
+                return;
+
+            try
+            {
+                PetState friend = PetCodec.Decode(input.Text);
+                pet.ReceiveFriendVisit();
+                SavePet();
+                UpdateUi();
+
+                await new ContentDialog
+                {
+                    Title = "Friend Visit!",
+                    Content = friend.Name + " the " + friend.Species + " visited your pet. " +
+                              "Your bond and happiness increased!",
+                    PrimaryButtonText = "YAY!"
+                }.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                await new ContentDialog
+                {
+                    Title = "Invalid Pet Code",
+                    Content = ex.Message,
+                    PrimaryButtonText = "Close"
+                }.ShowAsync();
+            }
         }
     }
 }
