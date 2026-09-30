@@ -29,52 +29,30 @@ jobs:
 
   uwp-arm:
     name: Build and sign UWP ARM package
-    runs-on: windows-2022
+    runs-on: windows-2025
     needs: core-tests
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install UWP build components
-        shell: pwsh
-        run: |
-          $bootstrapper = "$env:RUNNER_TEMP\vs_enterprise.exe"
-          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_enterprise.exe" -OutFile $bootstrapper
-
-          $installPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
-          $args = @(
-            "modify",
-            "--add", "Microsoft.VisualStudio.Workload.Universal",
-            "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041",
-            "--add", "Microsoft.VisualStudio.Component.VC.Tools.ARM",
-            "--add", "Microsoft.VisualStudio.Component.VC.14.29.16.11.ARM",
-            "--includeRecommended",
-            "--installPath", $installPath,
-            "--wait",
-            "--quiet",
-            "--force",
-            "--norestart"
-          )
-
-          Write-Host ("Running: {0} {1}" -f $bootstrapper, ($args -join " "))
-          $p = Start-Process -FilePath $bootstrapper -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
-          Write-Host ("Visual Studio bootstrapper exit code: {0}" -f $p.ExitCode)
-          if ($p.ExitCode -ne 0) {
-            throw "Unable to add UWP build components. Bootstrapper exit code $($p.ExitCode)."
-          }
-
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
       - name: Verify UWP targets
         shell: pwsh
         run: |
-          $direct = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml\v17.0\Microsoft.Windows.Xaml.targets"
-          if (Test-Path $direct) {
-            Write-Host "Found UWP XAML targets at $direct"
-          } else {
-            $targets = Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml" -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
-            if (-not $targets) { throw "Microsoft.Windows.Xaml.targets is still missing after the UWP installation step." }
-            Write-Host "Found UWP XAML targets at $($targets.FullName)"
+          $targets = @(
+            "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml",
+            "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml",
+            "C:\Program Files (x86)\Windows Kits\10\DesignTime\CommonConfiguration\Neutral"
+          )
+          $found = $null
+          foreach ($root in $targets) {
+            if (Test-Path $root) {
+              $found = Get-ChildItem $root -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
+              if ($found) { break }
+            }
           }
+          if (-not $found) { throw "Microsoft.Windows.Xaml.targets is missing from the preinstalled UWP tooling." }
+          Write-Host "Found UWP XAML targets at $($found.FullName)"
       - name: Restore NuGet packages
         shell: pwsh
         run: nuget restore PetWorldMobile/PetWorldMobile.sln
