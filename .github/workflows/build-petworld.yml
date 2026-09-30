@@ -85,7 +85,8 @@ jobs:
         shell: pwsh
         run: |
           $publisher = "CN=BlazeBinky PetWorld"
-          $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject $publisher -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -KeyExportPolicy Exportable -CertStoreLocation "Cert:\CurrentUser\My" -NotAfter (Get-Date).AddYears(3)
+          $eku = "2.5.29.37={text}1.3.6.1.5.5.7.3.3"
+          $cert = New-SelfSignedCertificate -Type Custom -Subject $publisher -KeyAlgorithm RSA -KeyLength 2048 -HashAlgorithm SHA256 -KeyUsage DigitalSignature -KeyExportPolicy Exportable -TextExtension @($eku) -CertStoreLocation "Cert:\CurrentUser\My" -NotAfter (Get-Date).AddYears(3)
           if ($cert.Subject -cne $publisher) { throw "Certificate subject '$($cert.Subject)' does not exactly match manifest publisher '$publisher'." }
           $pwd = ConvertTo-SecureString ([Guid]::NewGuid().ToString()) -AsPlainText -Force
           Export-PfxCertificate -Cert $cert -FilePath "$env:RUNNER_TEMP\PetWorldSigning.pfx" -Password $pwd | Out-Null
