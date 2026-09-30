@@ -12,6 +12,10 @@ on:
       - '.github/workflows/build-petworld.yml'
   workflow_dispatch:
 
+concurrency:
+  group: petworld-mobile-build
+  cancel-in-progress: true
+
 jobs:
   core-tests:
     name: Core gameplay tests
@@ -34,38 +38,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install minimal VS2022 UWP toolchain
-        shell: pwsh
-        run: |
-          $bootstrapper = "$env:RUNNER_TEMP\vs_community.exe"
-          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_community.exe" -OutFile $bootstrapper
-          $installPath = "D:\a\VS2022UWP"
-
-          $args = @(
-            "--installPath", $installPath,
-            "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.Support",
-            "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.NetCoreAndStandard",
-            "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.VC.v142",
-            "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041",
-            "--add", "Microsoft.VisualStudio.Component.VC.Tools.ARM",
-            "--add", "Microsoft.VisualStudio.Component.VC.14.29.16.11.ARM",
-            "--add", "Microsoft.Component.NetFX.Native",
-            "--quiet",
-            "--wait",
-            "--norestart"
-          )
-
-          Write-Host ("Installing minimal UWP toolchain at {0}" -f $installPath)
-          $p = Start-Process -FilePath $bootstrapper -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
-          Write-Host ("VS2022 bootstrapper exit code: {0}" -f $p.ExitCode)
-          if ($p.ExitCode -ne 0) { throw "VS2022 UWP toolchain installation failed." }
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x86
 
       - name: Verify UWP targets
         shell: pwsh
         run: |
-          $found = Get-ChildItem "D:\a\VS2022UWP" -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
-          if (-not $found) { throw "Microsoft.Windows.Xaml.targets is missing from the fresh UWP toolchain." }
-          Write-Host "Found UWP XAML targets at $($found.FullName)"
+          $roots = @(
+            "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml",
+            "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml",
+            "C:\Program Files\Microsoft Visual Studio",
+            "C:\Program Files (x86)\Microsoft Visual Studio"
+          )
+          $found = $null
+          foreach ($root in $roots) {
+            if (Test-Path $root) {
+              $found = Get-ChildItem $root -Recurse -Filter Microsoft.Windows.UI.Xaml.CSharp.targets -ErrorAction SilentlyContinue | Select-Object -First 1
+              if ($found) { break }
+            }
+          }
+          if (-not $found) { throw "Microsoft.Windows.UI.Xaml.CSharp.targets is missing from the installed UWP tooling." }
+          Write-Host "Found UWP C# XAML targets at $($found.FullName)"
 
       - name: Restore NuGet packages
         shell: pwsh
@@ -73,7 +68,7 @@ jobs:
       - name: Build UWP ARM package
         shell: pwsh
         run: >
-          & 'D:\a\VS2022UWP\MSBuild\Current\Bin\MSBuild.exe' PetWorldMobile/PetWorldMobile.sln
+          msbuild PetWorldMobile/PetWorldMobile.sln
           /m
           /p:Configuration=Release
           /p:Platform=ARM
