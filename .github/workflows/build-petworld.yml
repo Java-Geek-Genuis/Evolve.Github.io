@@ -28,7 +28,7 @@ jobs:
         run: dotnet run --project PetWorldMobile/Tests/PetWorld.SelfTest.csproj -c Release
 
   uwp-arm:
-    name: Build UWP ARM package
+    name: Build and sign UWP ARM package
     runs-on: windows-2022
     needs: core-tests
     steps:
@@ -39,7 +39,7 @@ jobs:
       - name: Restore NuGet packages
         shell: pwsh
         run: nuget restore PetWorldMobile/PetWorldMobile.sln
-      - name: Build and package ARM
+      - name: Build UWP ARM package
         shell: pwsh
         run: >
           msbuild PetWorldMobile/PetWorldMobile.sln
@@ -48,15 +48,35 @@ jobs:
           /p:Platform=ARM
           /p:AppxPackageSigningEnabled=false
           /p:GenerateAppxPackageOnBuild=true
-      - name: Collect APPX
+      - name: Collect unsigned APPX
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
           $files = Get-ChildItem -Path PetWorldMobile -Recurse -Filter *.appx
           if (-not $files) { throw "No APPX was produced." }
           $files | Copy-Item -Destination artifacts -Force
-      - name: Upload ARM APPX
+      - name: Create temporary signing certificate
+        shell: pwsh
+        run: |
+          $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=BlazeBinky PetWorld" -KeyAlgorithm RSA -KeyLength 2048 -KeyUsage DigitalSignature -CertStoreLocation "Cert:\CurrentUser\My" -NotAfter (Get-Date).AddYears(3)
+          $pwd = ConvertTo-SecureString ([Guid]::NewGuid().ToString()) -AsPlainText -Force
+          Export-PfxCertificate -Cert $cert -FilePath "$env:RUNNER_TEMP\PetWorldSigning.pfx" -Password $pwd | Out-Null
+          Export-Certificate -Cert $cert -FilePath "$env:GITHUB_WORKSPACE\artifacts\PetWorldMobile.cer" | Out-Null
+          $secret = [System.Net.NetworkCredential]::new("", $pwd).Password
+          "PETWORLD_PFX_PASSWORD=$secret" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Sign APPX
+        shell: pwsh
+        run: |
+          $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter signtool.exe | Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $signtool) { throw "signtool.exe not found." }
+          $appx = Get-ChildItem artifacts -Filter *.appx | Select-Object -First 1
+          if (-not $appx) { throw "APPX not found." }
+          & $signtool.FullName sign /fd SHA256 /a /f "$env:RUNNER_TEMP\PetWorldSigning.pfx" /p "$env:PETWORLD_PFX_PASSWORD" "$($appx.FullName)"
+          if ($LASTEXITCODE -ne 0) { throw "signtool failed with exit code $LASTEXITCODE." }
+          & $signtool.FullName verify /pa /all "$($appx.FullName)"
+          if ($LASTEXITCODE -ne 0) { throw "APPX signature verification failed." }
+      - name: Upload signed ARM package
         uses: actions/upload-artifact@v4
         with:
-          name: PetWorld-Mobile-ARM-unsigned
+          name: PetWorld-Mobile-ARM-signed
           path: artifacts/*
