@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="PetWorldMobile.App">
-      <uap:VisualElements AppListEntry="list"
+      <uap:VisualElements AppListEntry="default"
           DisplayName="PetWorld Mobile"
           Description="Raise, explore and exchange pocket pets."
           BackgroundColor="#182031"
