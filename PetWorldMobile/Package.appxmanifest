@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10">
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
   <Identity Name="BlazeBinky.PetWorldMobile" Publisher="CN=BlazeBinky PetWorld" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="6d5ee8a2-33af-4e73-99b8-7654d63c9d19" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>PetWorld Mobile</DisplayName>
     <PublisherDisplayName>BlazeBinky</PublisherDisplayName>
