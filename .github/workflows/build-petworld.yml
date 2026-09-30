@@ -29,30 +29,65 @@ jobs:
 
   uwp-arm:
     name: Build and sign UWP ARM package
-    runs-on: windows-2025
+    runs-on: windows-2022
     needs: core-tests
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install legacy UWP tooling
+        shell: pwsh
+        run: |
+          $setup = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe"
+          if (-not (Test-Path $setup)) { throw "Visual Studio setup.exe not found." }
+          $installPath = & "C:\ProgramData\Chocolatey\bin\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+          if (-not $installPath) { throw "Unable to locate Visual Studio installation." }
+
+          $args = @(
+            "modify",
+            "--installPath", $installPath.Trim(),
+            "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.Support",
+            "--add", "Microsoft.VisualStudio.ComponentGroup.UWP.NetCoreAndStandard",
+            "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041",
+            "--add", "Microsoft.VisualStudio.Component.VC.Tools.ARM",
+            "--add", "Microsoft.VisualStudio.Component.VC.14.29.16.11.ARM",
+            "--quiet",
+            "--norestart"
+          )
+
+          Write-Host ("Visual Studio: {0}" -f $installPath)
+          Write-Host ("Running: {0} {1}" -f $setup, ($args -join " "))
+          $p = Start-Process -FilePath $setup -ArgumentList $args -Wait -PassThru -WindowStyle Hidden
+          Write-Host ("Visual Studio installer exit code: {0}" -f $p.ExitCode)
+
+          if ($p.ExitCode -ne 0) {
+            Write-Host "Installer returned non-zero; printing recent setup logs before failing."
+            Get-ChildItem "$env:TEMP" -Filter "dd_setup_*.log" -ErrorAction SilentlyContinue |
+              Sort-Object LastWriteTime -Descending |
+              Select-Object -First 3 |
+              ForEach-Object { Write-Host "=== $($_.FullName) ==="; Get-Content $_.FullName -Tail 80 }
+            throw "Unable to add legacy UWP tooling."
+          }
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
       - name: Verify UWP targets
         shell: pwsh
         run: |
-          $targets = @(
+          $roots = @(
             "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml",
             "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\WindowsXaml",
             "C:\Program Files (x86)\Windows Kits\10\DesignTime\CommonConfiguration\Neutral"
           )
           $found = $null
-          foreach ($root in $targets) {
+          foreach ($root in $roots) {
             if (Test-Path $root) {
               $found = Get-ChildItem $root -Recurse -Filter Microsoft.Windows.Xaml.targets -ErrorAction SilentlyContinue | Select-Object -First 1
               if ($found) { break }
             }
           }
-          if (-not $found) { throw "Microsoft.Windows.Xaml.targets is missing from the preinstalled UWP tooling." }
+          if (-not $found) { throw "Microsoft.Windows.Xaml.targets is still missing." }
           Write-Host "Found UWP XAML targets at $($found.FullName)"
+
       - name: Restore NuGet packages
         shell: pwsh
         run: nuget restore PetWorldMobile/PetWorldMobile.sln
