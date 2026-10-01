@@ -19,6 +19,7 @@
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <UapAppxPackageBuildMode>SideloadOnly</UapAppxPackageBuildMode>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <NuGetAudit>false</NuGetAudit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
