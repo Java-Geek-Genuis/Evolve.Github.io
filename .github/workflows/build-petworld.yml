@@ -78,9 +78,11 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-          $files = Get-ChildItem -Path PetWorldMobile -Recurse -Filter *.appx
-          if (-not $files) { throw "No APPX was produced." }
-          $files | Copy-Item -Destination artifacts -Force
+          $files = Get-ChildItem -Path PetWorldMobile -Recurse -Filter "PetWorldMobile_*.appx"
+          $main = $files | Where-Object { $_.Name -eq "PetWorldMobile_1.0.0.0_ARM.appx" } | Select-Object -First 1
+          if (-not $main) { throw "The expected ARM PetWorld package was not produced." }
+          Copy-Item $main.FullName -Destination artifacts -Force
+          Write-Host "Collected main app package: $($main.FullName)"
       - name: Create temporary signing certificate
         shell: pwsh
         run: |
@@ -97,11 +99,13 @@ jobs:
         run: |
           $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter signtool.exe | Sort-Object FullName -Descending | Select-Object -First 1
           if (-not $signtool) { throw "signtool.exe not found." }
-          $appx = Get-ChildItem artifacts -Filter *.appx | Select-Object -First 1
-          if (-not $appx) { throw "APPX not found." }
-          & $signtool.FullName sign /fd SHA256 /f "$env:RUNNER_TEMP\PetWorldSigning.pfx" /p "$env:PETWORLD_PFX_PASSWORD" "$($appx.FullName)"
+          $appx = Get-ChildItem artifacts -Filter "PetWorldMobile_1.0.0.0_ARM.appx" | Select-Object -First 1
+          if (-not $appx) { throw "Main ARM APPX not found." }
+          & $signtool.FullName sign /debug /fd SHA256 /f "$env:RUNNER_TEMP\PetWorldSigning.pfx" /p "$env:PETWORLD_PFX_PASSWORD" "$($appx.FullName)"
           if ($LASTEXITCODE -ne 0) { throw "signtool failed with exit code $LASTEXITCODE." }
-          Write-Host "Signed $($appx.Name) with publisher-matching certificate. The companion .cer is included for phone trust."
+          & $signtool.FullName verify /pa /v "$($appx.FullName)"
+          if ($LASTEXITCODE -ne 0) { throw "Signed APPX verification failed with exit code $LASTEXITCODE." }
+          Write-Host "Signed and verified $($appx.Name). The companion .cer is included for phone trust."
       - name: Upload signed ARM package
         uses: actions/upload-artifact@v4
         with:
