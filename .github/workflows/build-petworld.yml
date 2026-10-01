@@ -64,7 +64,7 @@ jobs:
 
       - name: Restore NuGet packages
         shell: pwsh
-        run: nuget restore PetWorldMobile/PetWorldMobile.sln
+        run: nuget restore PetWorldMobile/PetWorldMobile.sln -NonInteractive -Source https://api.nuget.org/v3/index.json -Verbosity quiet
       - name: Build UWP ARM package
         shell: pwsh
         run: >
