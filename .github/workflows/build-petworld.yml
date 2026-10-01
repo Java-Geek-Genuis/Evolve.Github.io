@@ -29,6 +29,10 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+      - name: Restore self-test project
+        shell: pwsh
+        run: dotnet restore PetWorldMobile/Tests/PetWorld.SelfTest.csproj --ignore-failed-sources --verbosity quiet
+
       - name: Run self tests
         shell: pwsh
         run: dotnet run --no-restore --project PetWorldMobile/Tests/PetWorld.SelfTest.csproj -c Release
