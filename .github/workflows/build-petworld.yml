@@ -20,6 +20,7 @@ jobs:
   core-tests:
     name: Core gameplay tests
     runs-on: windows-2022
+    timeout-minutes: 3
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,7 +30,7 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Run self tests
         shell: pwsh
-        run: dotnet run --project PetWorldMobile/Tests/PetWorld.SelfTest.csproj -c Release
+        run: dotnet run --no-restore --project PetWorldMobile/Tests/PetWorld.SelfTest.csproj -c Release
 
   uwp-arm:
     name: Build and sign UWP ARM package
