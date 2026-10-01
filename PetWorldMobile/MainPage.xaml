@@ -352,7 +352,6 @@
               <Path Data="M87,111 Q87,126 72,129 M87,111 Q87,126 102,129"
                     Stroke="#56363B"
                     StrokeThickness="4"
-                    StrokeLineCap="Round"
                     Fill="Transparent"/>
             </Grid>
           </Grid>
