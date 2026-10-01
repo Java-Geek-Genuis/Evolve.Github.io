@@ -4,8 +4,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace PetWorldMobile
 {
@@ -13,24 +12,55 @@ namespace PetWorldMobile
     {
         private PetState pet;
         private readonly DispatcherTimer timer = new DispatcherTimer();
+        private readonly DispatcherTimer blinkTimer = new DispatcherTimer();
         private bool sleeping;
+        private bool busyReaction;
+        private int reactionCount;
         private const string SaveKey = "PetWorld.Save";
 
         public MainPage()
         {
             InitializeComponent();
+
             pet = LoadPet();
+
             timer.Interval = TimeSpan.FromSeconds(30);
             timer.Tick += OnTimerTick;
             timer.Start();
+
+            blinkTimer.Interval = TimeSpan.FromSeconds(4);
+            blinkTimer.Tick += BlinkTimer_Tick;
+            blinkTimer.Start();
+
+            Loaded += MainPage_Loaded;
             UpdateUi();
+        }
+
+        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            IdlePetStoryboard.Begin();
+            ShowSpeech("I'm home!");
+        }
+
+        private void BlinkTimer_Tick(object sender, object e)
+        {
+            BlinkStoryboard.Begin();
         }
 
         private void OnTimerTick(object sender, object e)
         {
-            pet.Tick(1);
+            if (sleeping)
+                pet.Tick(1);
+            else
+                pet.Tick(1);
+
             SavePet();
             UpdateUi();
+
+            if (!sleeping && pet.Hunger < 35)
+                ShowSpeech("I'm hungry...");
+            else if (!sleeping && pet.Energy < 25)
+                ShowSpeech("I need a rest.");
         }
 
         private PetState LoadPet()
@@ -53,97 +83,129 @@ namespace PetWorldMobile
 
         private void UpdateUi()
         {
-            PetNameText.Text = pet.Name + (sleeping ? "  zZ" : "");
-            StatusText.Text = "Lv " + pet.Level + " • " + pet.Mood + " • Happiness " + pet.Happiness + "%";
-            CoinText.Text = "Coins " + pet.Coins;
-            SpeciesText.Text = pet.Species;
-            MoodBubble.Text = sleeping ? "Zzz..." : pet.Mood + "!";
-            DrawPet();
+            PetNameText.Text = pet.Name;
+            LevelText.Text = "LEVEL " + pet.Level;
+            MoodText.Text = (pet.Mood ?? "CONTENT").ToUpper();
+            CoinText.Text = pet.Coins + " COINS";
+            StatusMiniText.Text = "HAPPY " + pet.Happiness + "%";
+            FoodHint.Text = pet.Hunger < 40 ? "LOW" : "OK";
+
+            if (sleeping)
+            {
+                MessageText.Text = "Your pet is curled up and resting.";
+            }
         }
 
-        private void DrawPet()
+        private void Pet_Tapped(object sender, RoutedEventArgs e)
         {
-            double w = Math.Max(200, WorldCanvas.ActualWidth);
-            double h = Math.Max(240, WorldCanvas.ActualHeight);
-            double cx = w / 2.0;
-            double cy = h * 0.54;
-            double size = Math.Min(w, h) * 0.27;
+            if (busyReaction)
+                return;
 
-            Canvas.SetLeft(Shadow, cx - size * 0.72);
-            Canvas.SetTop(Shadow, cy + size * 0.48);
-            Shadow.Width = size * 1.44;
-            Shadow.Height = size * 0.28;
+            busyReaction = true;
+            reactionCount++;
 
-            Canvas.SetLeft(Body, cx - size);
-            Canvas.SetTop(Body, cy - size * 0.78);
-            Body.Width = size * 2;
-            Body.Height = size * 1.56;
+            if (reactionCount % 3 == 0)
+                ShowSpeech("Heehee!");
+            else if (reactionCount % 2 == 0)
+                ShowSpeech("Again!");
+            else
+                ShowSpeech("That tickles!");
 
-            Canvas.SetLeft(Belly, cx - size * 0.62);
-            Canvas.SetTop(Belly, cy - size * 0.02);
-            Belly.Width = size * 1.24;
-            Belly.Height = size * 0.95;
+            pet.Happiness = Math.Min(100, pet.Happiness + 2);
+            pet.Bond = Math.Min(100, pet.Bond + 1);
 
-            Canvas.SetLeft(Eye1, cx - size * 0.42);
-            Canvas.SetTop(Eye1, cy - size * 0.28);
-            Eye1.Width = size * 0.22;
-            Eye1.Height = size * 0.30;
+            PetReactionStoryboard.Begin();
+            SavePet();
+            UpdateUi();
 
-            Canvas.SetLeft(Eye2, cx + size * 0.20);
-            Canvas.SetTop(Eye2, cy - size * 0.28);
-            Eye2.Width = size * 0.22;
-            Eye2.Height = size * 0.30;
-
-            var geometry = new PathGeometry();
-            var figure = new PathFigure
+            var release = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(420) };
+            release.Tick += (s, a) =>
             {
-                StartPoint = new Windows.Foundation.Point(cx - size * 0.18, cy + size * 0.18),
-                IsClosed = false,
-                IsFilled = false
+                release.Stop();
+                busyReaction = false;
             };
-            figure.Segments.Add(new ArcSegment
-            {
-                Point = new Windows.Foundation.Point(cx + size * 0.18, cy + size * 0.18),
-                Size = new Windows.Foundation.Size(size * 0.36, size * 0.25),
-                SweepDirection = SweepDirection.Clockwise,
-                IsLargeArc = false
-            });
-            geometry.Figures.Add(figure);
-            Smile.Data = geometry;
-
-            Ear1.Points = new PointCollection
-            {
-                new Windows.Foundation.Point(cx - size * 0.70, cy - size * 0.62),
-                new Windows.Foundation.Point(cx - size * 0.96, cy - size * 1.18),
-                new Windows.Foundation.Point(cx - size * 0.32, cy - size * 0.86)
-            };
-            Ear2.Points = new PointCollection
-            {
-                new Windows.Foundation.Point(cx + size * 0.70, cy - size * 0.62),
-                new Windows.Foundation.Point(cx + size * 0.96, cy - size * 1.18),
-                new Windows.Foundation.Point(cx + size * 0.32, cy - size * 0.86)
-            };
-
-            MoodBubble.Measure(new Windows.Foundation.Size(w, h));
-            Canvas.SetLeft(MoodBubble, Math.Min(w - MoodBubble.DesiredSize.Width - 10, cx + size * 0.50));
-            Canvas.SetTop(MoodBubble, Math.Max(10, cy - size * 1.15));
+            release.Start();
         }
 
-        private void WorldCanvas_SizeChanged(object sender, SizeChangedEventArgs e) => DrawPet();
+        private void Page_Tapped(object sender, RoutedEventArgs e)
+        {
+            // The pet handles its own taps. This keeps the rest of the room passive.
+        }
 
-        private void Feed_Click(object sender, RoutedEventArgs e) { sleeping = false; pet.Feed(); SavePet(); UpdateUi(); }
-        private void Play_Click(object sender, RoutedEventArgs e) { sleeping = false; pet.Play(); SavePet(); UpdateUi(); }
-        private void Train_Click(object sender, RoutedEventArgs e) { sleeping = false; pet.Train(); SavePet(); UpdateUi(); }
-        private void Sleep_Click(object sender, RoutedEventArgs e) { sleeping = true; pet.Sleep(); SavePet(); UpdateUi(); }
-        private void Save_Click(object sender, RoutedEventArgs e) { SavePet(); MoodBubble.Text = "Saved!"; }
+        private void Play_Click(object sender, RoutedEventArgs e)
+        {
+            sleeping = false;
+            if (pet.Energy < 8)
+            {
+                ShowSpeech("Too tired!");
+                MessageText.Text = "Your pet needs a rest before playing.";
+                PetReactionStoryboard.Begin();
+                return;
+            }
+
+            pet.Play();
+            pet.Happiness = Math.Min(100, pet.Happiness + 3);
+            ShowSpeech("Let's play!");
+            MessageText.Text = "You played together. Happiness and bond went up.";
+            ActionBounceStoryboard.Begin();
+            SavePet();
+            UpdateUi();
+        }
+
+        private void Feed_Click(object sender, RoutedEventArgs e)
+        {
+            sleeping = false;
+            pet.Feed();
+            ShowSpeech(pet.Hunger > 75 ? "Yum!" : "More, please!");
+            MessageText.Text = "Your pet happily ate. Keep an eye on hunger during the day.";
+            ActionBounceStoryboard.Begin();
+            SavePet();
+            UpdateUi();
+        }
+
+        private void Train_Click(object sender, RoutedEventArgs e)
+        {
+            sleeping = false;
+            pet.Train();
+            ShowSpeech("I can do it!");
+            MessageText.Text = "Training made your pet stronger and earned experience.";
+            ActionBounceStoryboard.Begin();
+            SavePet();
+            UpdateUi();
+        }
+
+        private void Sleep_Click(object sender, RoutedEventArgs e)
+        {
+            sleeping = true;
+            pet.Sleep();
+            ShowSpeech("Night night...");
+            MessageText.Text = "Your pet is sleeping.";
+            SavePet();
+            UpdateUi();
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            SavePet();
+            ShowSpeech("Saved!");
+            MessageText.Text = "PetWorld saved your pet.";
+        }
 
         private async void Explore_Click(object sender, RoutedEventArgs e)
         {
             sleeping = false;
             string result = pet.Explore();
+            ShowSpeech("Let's go!");
+            ActionBounceStoryboard.Begin();
             SavePet();
             UpdateUi();
-            await new ContentDialog { Title = "Adventure", Content = result, PrimaryButtonText = "Nice!" }.ShowAsync();
+
+            await new ContentDialog
+            {
+                Title = "DISCOVERY",
+                Content = result,
+                PrimaryButtonText = "KEEP GOING"
+            }.ShowAsync();
         }
 
         private void Adventure_Click(object sender, RoutedEventArgs e)
@@ -155,25 +217,44 @@ namespace PetWorldMobile
         private async void Stats_Click(object sender, RoutedEventArgs e)
         {
             string content =
-                "Species: " + pet.Species + "\n" +
-                "Level: " + pet.Level + "\n" +
-                "XP: " + pet.Experience + "\n" +
-                "Hunger: " + pet.Hunger + "\n" +
-                "Energy: " + pet.Energy + "\n" +
-                "Happiness: " + pet.Happiness + "\n" +
-                "Bond: " + pet.Bond + "\n" +
-                "Curiosity: " + pet.Curiosity + "\n" +
-                "Strength: " + pet.Strength + "\n" +
+                "Species: " + pet.Species + "
+" +
+                "Level: " + pet.Level + "
+" +
+                "XP: " + pet.Experience + "
+" +
+                "Hunger: " + pet.Hunger + "
+" +
+                "Energy: " + pet.Energy + "
+" +
+                "Happiness: " + pet.Happiness + "
+" +
+                "Bond: " + pet.Bond + "
+" +
+                "Curiosity: " + pet.Curiosity + "
+" +
+                "Strength: " + pet.Strength + "
+" +
                 "Speed: " + pet.Speed;
 
-            await new ContentDialog { Title = "Pet Stats", Content = content, PrimaryButtonText = "Close" }.ShowAsync();
+            await new ContentDialog
+            {
+                Title = "PET PROFILE",
+                Content = content,
+                PrimaryButtonText = "CLOSE"
+            }.ShowAsync();
         }
 
         private async void Link_Click(object sender, RoutedEventArgs e)
         {
             string myCode = PetCodec.Encode(pet);
 
-            var copyButton = new Button { Content = "COPY MY PET CODE", HorizontalAlignment = HorizontalAlignment.Left };
+            var copyButton = new Button
+            {
+                Content = "COPY MY PET CODE",
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+
             copyButton.Click += (s, args) =>
             {
                 var outgoing = new DataPackage();
@@ -185,22 +266,23 @@ namespace PetWorldMobile
             var input = new TextBox
             {
                 AcceptsReturn = true,
-                TextWrapping = TextWrapping.Wrap,
+                TextWrapping = Windows.UI.Xaml.TextWrapping.Wrap,
                 PlaceholderText = "Paste a friend's PetWorld code here"
             };
 
             var content = new StackPanel();
             content.Children.Add(new TextBlock
             {
-                Text = "Copy your code to send it to another player, or paste a friend's code below to visit.",
-                TextWrapping = TextWrapping.Wrap
+                Text = "Send your pet code to another player, or paste one here to let your pets meet.",
+                TextWrapping = Windows.UI.Xaml.TextWrapping.Wrap,
+                Margin = new Thickness(0, 0, 0, 8)
             });
             content.Children.Add(copyButton);
             content.Children.Add(input);
 
             var dialog = new ContentDialog
             {
-                Title = "Pet Link / Visit",
+                Title = "PET FRIENDS",
                 Content = content,
                 PrimaryButtonText = "VISIT FRIEND",
                 SecondaryButtonText = "CLOSE"
@@ -214,20 +296,26 @@ namespace PetWorldMobile
             {
                 PetState friend = PetCodec.Decode(input.Text);
                 pet.ReceiveFriendVisit();
+                ShowSpeech("A friend!");
+                MessageText.Text = friend.Name + " came to visit.";
                 SavePet();
                 UpdateUi();
-
-                await new ContentDialog
-                {
-                    Title = "Friend Visit!",
-                    Content = friend.Name + " the " + friend.Species + " visited your pet. Your bond and happiness increased!",
-                    PrimaryButtonText = "YAY!"
-                }.ShowAsync();
             }
             catch (Exception ex)
             {
-                await new ContentDialog { Title = "Invalid Pet Code", Content = ex.Message, PrimaryButtonText = "Close" }.ShowAsync();
+                await new ContentDialog
+                {
+                    Title = "INVALID PET CODE",
+                    Content = ex.Message,
+                    PrimaryButtonText = "CLOSE"
+                }.ShowAsync();
             }
+        }
+
+        private void ShowSpeech(string text)
+        {
+            SpeechText.Text = text;
+            BubbleStoryboard.Begin();
         }
     }
 }
