@@ -66,40 +66,74 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <Grid Grid.Row="0" Padding="12,10,12,8">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition/>
-        <ColumnDefinition Width="Auto"/>
-      </Grid.ColumnDefinitions>
+    <Grid Grid.Row="0" Padding="12,10,12,6">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
 
-      <StackPanel>
-        <TextBlock x:Name="PetNameText"
-                   Text="Blinky"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   Foreground="{StaticResource TextBrush}"/>
-        <StackPanel Orientation="Horizontal">
-          <TextBlock x:Name="LevelText" Text="LEVEL 1" FontSize="12" FontWeight="SemiBold"
-                     Foreground="{StaticResource AccentBrush}" Margin="0,0,8,0"/>
-          <TextBlock x:Name="MoodText" Text="CONTENT" FontSize="12" FontWeight="SemiBold"
-                     Foreground="#AEBBD0"/>
-        </StackPanel>
-      </StackPanel>
+      <Grid Grid.Row="0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-      <Border Grid.Column="1"
-              Background="{StaticResource PanelBrush}"
-              CornerRadius="16"
-              Padding="12,7"
-              VerticalAlignment="Center">
         <StackPanel>
-          <TextBlock x:Name="CoinText" Text="40 COINS"
-                     FontSize="13" FontWeight="SemiBold"
-                     Foreground="{StaticResource TextBrush}"
-                     HorizontalAlignment="Center"/>
-          <TextBlock x:Name="StatusMiniText" Text="HAPPY"
-                     FontSize="11" Foreground="#AEBBD0"
-                     HorizontalAlignment="Center"/>
+          <TextBlock x:Name="PetNameText"
+                     Text="Blinky"
+                     FontSize="28"
+                     FontWeight="Bold"
+                     Foreground="{StaticResource TextBrush}"/>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock x:Name="LevelText" Text="LEVEL 1" FontSize="12" FontWeight="SemiBold"
+                       Foreground="{StaticResource AccentBrush}" Margin="0,0,8,0"/>
+            <TextBlock x:Name="MoodText" Text="CONTENT" FontSize="12" FontWeight="SemiBold"
+                       Foreground="#AEBBD0"/>
+          </StackPanel>
         </StackPanel>
+
+        <Border Grid.Column="1"
+                Background="{StaticResource PanelBrush}"
+                CornerRadius="16"
+                Padding="12,7"
+                VerticalAlignment="Center">
+          <StackPanel>
+            <TextBlock x:Name="CoinText" Text="40 COINS"
+                       FontSize="13" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextBrush}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock x:Name="StatusMiniText" Text="HAPPY"
+                       FontSize="11" Foreground="#AEBBD0"
+                       HorizontalAlignment="Center"/>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <Border Grid.Row="1"
+              Background="#1A2435"
+              CornerRadius="12"
+              Padding="8,6"
+              Margin="0,6,0,0">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+          </Grid.ColumnDefinitions>
+
+          <StackPanel Grid.Column="0">
+            <TextBlock Text="HUNGER" FontSize="9" Foreground="#AEBBD0"/>
+            <ProgressBar x:Name="HungerBar" Minimum="0" Maximum="100" Height="7" Margin="0,2,6,0"/>
+          </StackPanel>
+
+          <StackPanel Grid.Column="1">
+            <TextBlock Text="ENERGY" FontSize="9" Foreground="#AEBBD0"/>
+            <ProgressBar x:Name="EnergyBar" Minimum="0" Maximum="100" Height="7" Margin="3,2,3,0"/>
+          </StackPanel>
+
+          <StackPanel Grid.Column="2">
+            <TextBlock Text="HAPPINESS" FontSize="9" Foreground="#AEBBD0"/>
+            <ProgressBar x:Name="HappinessBar" Minimum="0" Maximum="100" Height="7" Margin="6,2,0,0"/>
+          </StackPanel>
+        </Grid>
       </Border>
     </Grid>
 
