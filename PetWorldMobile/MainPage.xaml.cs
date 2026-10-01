@@ -217,24 +217,15 @@ namespace PetWorldMobile
         private async void Stats_Click(object sender, RoutedEventArgs e)
         {
             string content =
-                "Species: " + pet.Species + "
-" +
-                "Level: " + pet.Level + "
-" +
-                "XP: " + pet.Experience + "
-" +
-                "Hunger: " + pet.Hunger + "
-" +
-                "Energy: " + pet.Energy + "
-" +
-                "Happiness: " + pet.Happiness + "
-" +
-                "Bond: " + pet.Bond + "
-" +
-                "Curiosity: " + pet.Curiosity + "
-" +
-                "Strength: " + pet.Strength + "
-" +
+                "Species: " + pet.Species + "\n" +
+                "Level: " + pet.Level + "\n" +
+                "XP: " + pet.Experience + "\n" +
+                "Hunger: " + pet.Hunger + "\n" +
+                "Energy: " + pet.Energy + "\n" +
+                "Happiness: " + pet.Happiness + "\n" +
+                "Bond: " + pet.Bond + "\n" +
+                "Curiosity: " + pet.Curiosity + "\n" +
+                "Strength: " + pet.Strength + "\n" +
                 "Speed: " + pet.Speed;
 
             await new ContentDialog
