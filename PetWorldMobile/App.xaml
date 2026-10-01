@@ -3,16 +3,26 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Application.Resources>
-    <SolidColorBrush x:Key="PageBrush" Color="#182031"/>
-    <SolidColorBrush x:Key="PanelBrush" Color="#24314B"/>
-    <SolidColorBrush x:Key="AccentBrush" Color="#53C797"/>
-    <SolidColorBrush x:Key="TextBrush" Color="#F1F5F9"/>
+    <SolidColorBrush x:Key="PageBrush" Color="#101827"/>
+    <SolidColorBrush x:Key="PanelBrush" Color="#27344C"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#7BE0AE"/>
+    <SolidColorBrush x:Key="TextBrush" Color="#F7FAFC"/>
+    <SolidColorBrush x:Key="RoomBrush" Color="#F4E9D8"/>
+    <LinearGradientBrush x:Key="PetBodyBrush" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#E89A78" Offset="0"/>
+      <GradientStop Color="#C96860" Offset="1"/>
+    </LinearGradientBrush>
+
     <Style TargetType="Button">
       <Setter Property="Margin" Value="3"/>
-      <Setter Property="Padding" Value="7,5"/>
-      <Setter Property="FontSize" Value="17"/>
-      <Setter Property="Background" Value="#30425F"/>
-      <Setter Property="Foreground" Value="#F1F5F9"/>
+      <Setter Property="Padding" Value="8,7"/>
+      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Background" Value="#31415E"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
   </Application.Resources>
 </Application>
